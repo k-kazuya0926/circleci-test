@@ -44,8 +44,8 @@ orbs:
 workflows:
   build-and-deploy-to-prod:
     jobs:
-      - tmp:
-          context: aws-deploy
+      # - tmp:
+      #     context: aws-deploy
       # - wait_for_approval:
       #     type: approval
       #     filters:
