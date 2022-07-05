@@ -73,6 +73,7 @@ workflows:
           role-arn: "${AWS_ROLE_ARN}"
           role-session-name: "circleci-oidc"
           session-duration: "900"
+          aws-cli-version: "3.1.1"
       # ## ECSへデプロイするジョブ
       # - aws-ecs/deploy-service-update:
       #     requires:
