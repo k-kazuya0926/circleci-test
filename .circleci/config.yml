@@ -4,17 +4,24 @@ orbs:
   aws-ecr: circleci/aws-ecr@8.1.2
   aws-ecs: circleci/aws-ecs@1.2.0
 workflows:
-  build-and-deploy:
+  build-and-deploy-to-prod:
     jobs:
+      - hold:
+          type: approval
+          filters:
+            branches:
+              only: master
       - aws-ecr/build-and-push-image:
           # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
           repo: "nginx"
           # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
           path: app
           dockerfile: docker/Dockerfile
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
+          requires:
+            - hold
       ## ECSへデプロイするジョブ
       - aws-ecs/deploy-service-update:
           requires:
