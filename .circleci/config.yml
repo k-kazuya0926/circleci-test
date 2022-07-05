@@ -69,7 +69,7 @@ workflows:
           path: app
           dockerfile: docker/Dockerfile
           context: aws-deploy
-          assume-web-identity: true
+          # assume-web-identity: true
           role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
           role-session-name: "circleci-oidc"
           session-duration: "900"
