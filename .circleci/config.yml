@@ -1,13 +1,19 @@
 version: 2.1
+executors:
+  my-executor:
+    docker:
+      - image: circleci/node # deprecated
+      # See https://circleci.com/docs/ja/2.0/next-gen-migration-guide/
 orbs:
   # aws-ecr: circleci/aws-ecr@6.10.0 # 「This job was rejected because the image is unavailable」
   aws-ecr: circleci/aws-ecr@8.1.2
   aws-ecs: circleci/aws-ecs@2.3.0
+  aws-cli: circleci/aws-cli@2.1.0
 jobs:
   tmp:
-    docker:
-      - image: cimg/node:lts
+    executor: my-executor
     steps:
+      - checkout
       - aws-cli/install
       - run: |
           aws_sts_credentials=$(aws sts assume-role-with-web-identity \
@@ -24,7 +30,8 @@ jobs:
 workflows:
   build-and-deploy-to-prod:
     jobs:
-      - tmp
+      - tmp:
+          context: aws-deploy
       # - wait_for_approval:
       #     type: approval
       #     filters:
