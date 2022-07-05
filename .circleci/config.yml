@@ -10,7 +10,8 @@ workflows:
           # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
           repo: "nginx"
           tag: "${CIRCLE_SHA1}"
-          path: app/docker
+          path: app
+          dockerfile: docker/Dockerfile
       ## ECSへデプロイするジョブ
       - aws-ecs/deploy-service-update:
           requires:
