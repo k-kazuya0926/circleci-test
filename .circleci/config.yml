@@ -54,6 +54,10 @@ workflows:
           tag: "latest"
           path: app
           dockerfile: docker/Dockerfile
+          assume-web-identity: true
+          role-arn: ${AWS_ROLE_ARN}
+          role-session-name: "circleci-oidc"
+          session-duration: "900"
       # ## ECSへデプロイするジョブ
       # - aws-ecs/deploy-service-update:
       #     requires:
