@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  # aws-ecr: circleci/aws-ecr@6.10.0
+  # aws-ecr: circleci/aws-ecr@6.10.0 # 「This job was rejected because the image is unavailable」
   aws-ecr: circleci/aws-ecr@8.1.2
   # aws-ecs: circleci/aws-ecs@1.2.0
 workflows:
