@@ -12,6 +12,9 @@ workflows:
           # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
           path: app
           dockerfile: docker/Dockerfile
+          filters:
+            branches:
+              only: master
       ## ECSへデプロイするジョブ
       - aws-ecs/deploy-service-update:
           requires:
