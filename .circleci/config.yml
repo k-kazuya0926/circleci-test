@@ -70,7 +70,7 @@ workflows:
           dockerfile: docker/Dockerfile
           context: aws-deploy
           assume-web-identity: true
-          role-arn: "arn:aws:iam::329892552245:instance-profile/OIDCwithCircleCI"
+          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI"
           role-session-name: "circleci-oidc"
           session-duration: "900"
           aws-cli-version: "3.1.1"
