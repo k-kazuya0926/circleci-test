@@ -54,6 +54,7 @@ workflows:
           tag: "latest"
           path: app
           dockerfile: docker/Dockerfile
+          context: aws-deploy
           assume-web-identity: true
           role-arn: ${AWS_ROLE_ARN}
           role-session-name: "circleci-oidc"
