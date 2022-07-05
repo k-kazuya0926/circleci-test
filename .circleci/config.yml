@@ -56,7 +56,7 @@ workflows:
           dockerfile: docker/Dockerfile
           context: aws-deploy
           assume-web-identity: true
-          role-arn: ${AWS_ROLE_ARN}
+          role-arn: "${AWS_ROLE_ARN}"
           role-session-name: "circleci-oidc"
           session-duration: "900"
       # ## ECSへデプロイするジョブ
