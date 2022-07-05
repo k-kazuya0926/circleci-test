@@ -31,6 +31,9 @@ workflows:
       - aws-ecs/deploy-service-update:
           requires:
             - aws-ecr/build-and-push-image
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
           family: "circleci-book-task"
           service-name: "circleci-book-service"
           cluster-name: "circleci-book-cluster"
