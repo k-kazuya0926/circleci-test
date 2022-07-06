@@ -51,28 +51,28 @@ workflows:
       #     filters:
       #       branches:
       #         only: master
-      # - aws-ecr/build-and-push-image:
-      #     # requires:
-      #     #   - wait_for_approval
-      #     filters:
-      #       branches:
-      #         only: master
-      #     # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
-      #     # aws-access-key-id: AWS_ACCESS_KEY_ID
-      #     # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-      #     region: "${AWS_REGION}"
-      #     registry-id: AWS_ECR_REGISTRY_ID
-      #     repo: "nginx"
-      #     # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
-      #     tag: "latest"
-      #     path: app
-      #     dockerfile: docker/Dockerfile
-      #     # OIDCを使う場合
-      #     context: aws-deploy
-      #     assume-web-identity: true
-      #     role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
-      #     role-session-name: "circleci-oidc"
-      #     session-duration: "900"
+      - aws-ecr/build-and-push-image:
+          # requires:
+          #   - wait_for_approval
+          filters:
+            branches:
+              only: master
+          # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
+          # aws-access-key-id: AWS_ACCESS_KEY_ID
+          # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: "${AWS_REGION}"
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: "nginx"
+          # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
+          tag: "latest"
+          path: app
+          dockerfile: docker/Dockerfile
+          # OIDCを使う場合
+          context: aws-deploy
+          assume-web-identity: true
+          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-session-name: "circleci-oidc"
+          session-duration: "900"
       ## ECSへデプロイするジョブ
       - aws-ecs/deploy-service-update:
           requires:
