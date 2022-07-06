@@ -16,15 +16,6 @@ jobs:
     executor: my-executor
     steps:
       - aws-cli/install
-      # # シェルを使う場合
-      # - run: |
-      #     set -x
-      #     ./assume-role-with-oidc.sh ${AWS_ROLE_ARN} ${CIRCLE_OIDC_TOKEN}
-      # - run:
-      #     name: some deploy
-      #     command: |
-      #       source aws-envs.sh
-      #       aws s3 ls
       # シェルを使わない場合
       - run: |
           aws_sts_credentials=$(aws sts assume-role-with-web-identity \
@@ -38,6 +29,15 @@ jobs:
           echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
           echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
           source $BASH_ENV
+      # 【参考】シェルを使う場合
+      # - run: |
+      #     set -x
+      #     ./assume-role-with-oidc.sh ${AWS_ROLE_ARN} ${CIRCLE_OIDC_TOKEN}
+      # - run:
+      #     name: some deploy
+      #     command: |
+      #       source aws-envs.sh
+      #       aws s3 ls
       - aws-ecs/update-service:
           cluster-name: "circleci-book-cluster"
           service-name: "circleci-book-service"
@@ -76,7 +76,12 @@ workflows:
           # role-arn: "arn:aws:iam::329892552245:role/${AWS_ROLE_NAME}" # 同上
           role-session-name: "circleci-oidc"
           session-duration: "900"
-      # ## OIDCを使わずにECSへデプロイするジョブ
+      # OIDCを使ってECSへデプロイするジョブ
+      - get-credentials-and-update-service:
+          requires:
+            - aws-ecr/build-and-push-image
+          context: aws-deploy
+      # 【参考】OIDCを使わずにECSへデプロイするジョブ
       # - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないと思われる
       #     requires:
       #       - aws-ecr/build-and-push-image
@@ -88,11 +93,6 @@ workflows:
       #     cluster-name: "circleci-book-cluster"
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
-      #     context: aws-deploy
-      # # OIDCを使ってECSへデプロイするジョブ
-      # - get-credentials-and-update-service:
-      #     requires:
-      #       - aws-ecr/build-and-push-image
       #     context: aws-deploy
 ### E2Eテストの例
 #version: 2
