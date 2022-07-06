@@ -42,16 +42,10 @@ jobs:
           cluster-name: "circleci-book-cluster"
           service-name: "circleci-book-service"
           family: "circleci-book-task"
-  tmp:
-    executor: my-executor
-    steps:
-      - run: echo ${AWS_ROLE_ARN}
-      - run: echo ${AWS_REGION}
 
 workflows:
   build-and-deploy-to-prod:
     jobs:
-      - tmp
       # - wait_for_approval:
       #     type: approval
       #     filters:
@@ -76,11 +70,10 @@ workflows:
           # OIDCを使う場合
           context: aws-deploy
           assume-web-identity: true
-          # role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
-          role-arn: "${AWS_ROLE_ARN}" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
           role-session-name: "circleci-oidc"
           session-duration: "900"
-      # ## ECSへデプロイするジョブ
+      # ## OIDCを使わずにECSへデプロイするジョブ
       # - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないと思われる
       #     requires:
       #       - aws-ecr/build-and-push-image
@@ -93,10 +86,11 @@ workflows:
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
       #     context: aws-deploy
-      - get-credential-and-update-service:
-          requires:
-            - aws-ecr/build-and-push-image
-          context: aws-deploy
+      # # OIDCを使ってECSへデプロイするジョブ
+      # - get-credential-and-update-service:
+      #     requires:
+      #       - aws-ecr/build-and-push-image
+      #     context: aws-deploy
 ### E2Eテストの例
 #version: 2
 #jobs:
