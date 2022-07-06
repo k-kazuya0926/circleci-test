@@ -16,7 +16,7 @@ jobs:
   deploy:
     executor: my-executor
     steps:
-      - checkout
+      # - checkout
       - aws-cli/install
       # # シェルを使う場合
       # - run: |
