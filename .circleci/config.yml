@@ -70,10 +70,10 @@ workflows:
           # OIDCを使う場合
           context: aws-deploy # 使える
           assume-web-identity: true
-          # role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
           # role-arn: ${AWS_ROLE_ARN} # 　「An error occurred (UnrecognizedClientException) when calling the GetAuthorizationToken operation: The security token included in the request is invalid.」
           # role-arn: "${AWS_ROLE_ARN}" # 同上
-          role-arn: "arn:aws:iam::329892552245:role/${AWS_ROLE_NAME}"
+          # role-arn: "arn:aws:iam::329892552245:role/${AWS_ROLE_NAME}" # 同上
           role-session-name: "circleci-oidc"
           session-duration: "900"
       # ## OIDCを使わずにECSへデプロイするジョブ
