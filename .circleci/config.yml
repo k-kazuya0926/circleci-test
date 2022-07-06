@@ -7,7 +7,7 @@ executors:
 
 orbs:
   # aws-ecr: circleci/aws-ecr@6.10.0 # 「This job was rejected because the image is unavailable」
-  aws-ecr: circleci/aws-ecr@8.1.2
+  aws-ecr: circleci/aws-ecr@8.1.1
   aws-ecs: circleci/aws-ecs@2.3.0
   aws-cli: circleci/aws-cli@3.1.1
 
@@ -70,8 +70,8 @@ workflows:
           # OIDCを使う場合
           context: aws-deploy # 使える
           assume-web-identity: true
-          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
-          # role-arn: ${AWS_ROLE_ARN} # 　「An error occurred (UnrecognizedClientException) when calling the GetAuthorizationToken operation: The security token included in the request is invalid.」
+          # role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-arn: ${AWS_ROLE_ARN} # 　「An error occurred (UnrecognizedClientException) when calling the GetAuthorizationToken operation: The security token included in the request is invalid.」
           # role-arn: "${AWS_ROLE_ARN}" # 同上
           # role-arn: "arn:aws:iam::329892552245:role/${AWS_ROLE_NAME}" # 同上
           role-session-name: "circleci-oidc"
