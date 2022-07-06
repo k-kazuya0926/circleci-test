@@ -4,88 +4,97 @@ version: 2.1
 #     docker:
 #       - image: circleci/node # deprecated
 #       # See https://circleci.com/docs/ja/2.0/next-gen-migration-guide/
+
 orbs:
   # aws-ecr: circleci/aws-ecr@6.10.0 # 「This job was rejected because the image is unavailable」
   aws-ecr: circleci/aws-ecr@8.1.2
   aws-ecs: circleci/aws-ecs@2.3.0
 #   aws-cli: circleci/aws-cli@2.1.0
-# jobs:
-#   tmp:
-#     executor: my-executor
-#     steps:
-#       - checkout
-#       - aws-cli/install
-# シェルを使う場合
-# - run: |
-#     set -x
-#     ./assume-role-with-oidc.sh ${AWS_ROLE_ARN} ${CIRCLE_OIDC_TOKEN}
-# - run:
-#     name: some deploy
-#     command: |
-#       source aws-envs.sh
-#       aws s3 ls
-# シェルを使わない場合
-# - run: |
-#     aws_sts_credentials=$(aws sts assume-role-with-web-identity \
-#       --role-arn ${AWS_ROLE_ARN} \
-#       --web-identity-token ${CIRCLE_OIDC_TOKEN} \
-#       --role-session-name "circleci-oidc" \
-#       --duration-seconds 900 \
-#       --query "Credentials" \
-#       --output "json")
-#     echo export AWS_ACCESS_KEY_ID="$(echo $aws_sts_credentials | jq -r '.AccessKeyId')" >> $BASH_ENV
-#     echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
-#     echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
-#     source $BASH_ENV
-# - run:
-#     name: some deploy
-#     command: |
-#       aws s3 ls
+
+jobs:
+  #   some-deploy:
+  #     executor: my-executor
+  #     steps:
+  #       - checkout
+  #       - aws-cli/install
+  # シェルを使う場合
+  # - run: |
+  #     set -x
+  #     ./assume-role-with-oidc.sh ${AWS_ROLE_ARN} ${CIRCLE_OIDC_TOKEN}
+  # - run:
+  #     name: some deploy
+  #     command: |
+  #       source aws-envs.sh
+  #       aws s3 ls
+  # シェルを使わない場合
+  # - run: |
+  #     aws_sts_credentials=$(aws sts assume-role-with-web-identity \
+  #       --role-arn ${AWS_ROLE_ARN} \
+  #       --web-identity-token ${CIRCLE_OIDC_TOKEN} \
+  #       --role-session-name "circleci-oidc" \
+  #       --duration-seconds 900 \
+  #       --query "Credentials" \
+  #       --output "json")
+  #     echo export AWS_ACCESS_KEY_ID="$(echo $aws_sts_credentials | jq -r '.AccessKeyId')" >> $BASH_ENV
+  #     echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
+  #     echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
+  #     source $BASH_ENV
+  # - run:
+  #     name: some deploy
+  #     command: |
+  #       aws s3 ls
+  tmp:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - run: echo "tmp"
+
 workflows:
   build-and-deploy-to-prod:
     jobs:
-      # - tmp:
+      # - some-deploy:
       #     context: aws-deploy
       # - wait_for_approval:
       #     type: approval
       #     filters:
       #       branches:
       #         only: master
-      - aws-ecr/build-and-push-image:
-          # requires:
-          #   - wait_for_approval
-          filters:
-            branches:
-              only: master
-          # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
-          # aws-access-key-id: AWS_ACCESS_KEY_ID
-          # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          region: "${AWS_REGION}"
-          registry-id: AWS_ECR_REGISTRY_ID
-          repo: "nginx"
-          # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
-          tag: "latest"
-          path: app
-          dockerfile: docker/Dockerfile
-          # OIDCを使う場合
-          context: aws-deploy
-          assume-web-identity: true
-          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
-          role-session-name: "circleci-oidc"
-          session-duration: "900"
-      ## ECSへデプロイするジョブ
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build-and-push-image
-          aws-access-key-id: AWS_ACCESS_KEY_ID
-          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-          aws-region: AWS_REGION
-          family: "circleci-book-task"
-          service-name: "circleci-book-service"
-          cluster-name: "circleci-book-cluster"
-          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
-          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
-          context: aws-deploy
+      # - aws-ecr/build-and-push-image:
+      #     # requires:
+      #     #   - wait_for_approval
+      #     filters:
+      #       branches:
+      #         only: master
+      #     # account-url: AWS_ECR_ACCOUNT_URL # 8.1.2では非対応
+      #     # aws-access-key-id: AWS_ACCESS_KEY_ID
+      #     # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      #     region: "${AWS_REGION}"
+      #     registry-id: AWS_ECR_REGISTRY_ID
+      #     repo: "nginx"
+      #     # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
+      #     tag: "latest"
+      #     path: app
+      #     dockerfile: docker/Dockerfile
+      #     # OIDCを使う場合
+      #     context: aws-deploy
+      #     assume-web-identity: true
+      #     role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+      #     role-session-name: "circleci-oidc"
+      #     session-duration: "900"
+      # ## ECSへデプロイするジョブ
+      # - aws-ecs/deploy-service-update:
+      #     requires:
+      #       - aws-ecr/build-and-push-image
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      #     aws-region: AWS_REGION
+      #     family: "circleci-book-task"
+      #     service-name: "circleci-book-service"
+      #     cluster-name: "circleci-book-cluster"
+      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
+      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
+      #     context: aws-deploy
+      - tmp
 ### E2Eテストの例
 #version: 2
 #jobs:
