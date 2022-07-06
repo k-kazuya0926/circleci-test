@@ -70,7 +70,8 @@ workflows:
           # OIDCを使う場合
           context: aws-deploy
           assume-web-identity: true
-          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          # role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-arn: "${AWS_ROLE_ARN}" # 「インスタンスプロファイルの ARN」ではないので注意
           role-session-name: "circleci-oidc"
           session-duration: "900"
       # ## ECSへデプロイするジョブ
