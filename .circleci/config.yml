@@ -67,23 +67,24 @@ workflows:
           tag: "latest"
           path: app
           dockerfile: docker/Dockerfile
+          # OIDCを使う場合
           context: aws-deploy
           assume-web-identity: true
           role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
           role-session-name: "circleci-oidc"
           session-duration: "900"
-      # ## ECSへデプロイするジョブ
-      # - aws-ecs/deploy-service-update:
-      #     requires:
-      #       - aws-ecr/build-and-push-image
-      #     aws-access-key-id: AWS_ACCESS_KEY_ID
-      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-      #     aws-region: AWS_REGION
-      #     family: "circleci-book-task"
-      #     service-name: "circleci-book-service"
-      #     cluster-name: "circleci-book-cluster"
-      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
-      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
+      ## ECSへデプロイするジョブ
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
+          family: "circleci-book-task"
+          service-name: "circleci-book-service"
+          cluster-name: "circleci-book-cluster"
+          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
+          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
 ### E2Eテストの例
 #version: 2
 #jobs:
