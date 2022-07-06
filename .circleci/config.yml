@@ -40,10 +40,14 @@ jobs:
           echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
           echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
           source $BASH_ENV
-      - run:
-          name: some deploy
-          command: |
-            aws s3 ls
+      # - run:
+      #     name: some deploy
+      #     command: |
+      #       aws s3 ls
+      - aws-ecs/update-service:
+          cluster-name: "circleci-book-cluster"
+          service-name: "circleci-book-service"
+          family: "circleci-book-task"
 
 workflows:
   build-and-deploy-to-prod:
