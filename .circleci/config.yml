@@ -42,10 +42,16 @@ jobs:
           cluster-name: "circleci-book-cluster"
           service-name: "circleci-book-service"
           family: "circleci-book-task"
+  tmp:
+    executor: my-executor
+    steps:
+      - run: echo ${AWS_ROLE_ARN}
+      - run: echo ${AWS_REGION}
 
 workflows:
   build-and-deploy-to-prod:
     jobs:
+      - tmp
       # - wait_for_approval:
       #     type: approval
       #     filters:
