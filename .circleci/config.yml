@@ -12,10 +12,9 @@ orbs:
   aws-cli: circleci/aws-cli@2.1.0
 
 jobs:
-  deploy:
+  get-credential-and-update-service:
     executor: my-executor
     steps:
-      # - checkout
       - aws-cli/install
       # # シェルを使う場合
       # - run: |
@@ -39,10 +38,6 @@ jobs:
           echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
           echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
           source $BASH_ENV
-      # - run:
-      #     name: some deploy
-      #     command: |
-      #       aws s3 ls
       - aws-ecs/update-service:
           cluster-name: "circleci-book-cluster"
           service-name: "circleci-book-service"
@@ -79,7 +74,7 @@ workflows:
           role-session-name: "circleci-oidc"
           session-duration: "900"
       # ## ECSへデプロイするジョブ
-      # - aws-ecs/deploy-service-update:
+      # - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないと思われる
       #     requires:
       #       - aws-ecr/build-and-push-image
       #     aws-access-key-id: AWS_ACCESS_KEY_ID
@@ -91,7 +86,7 @@ workflows:
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
       #     context: aws-deploy
-      - deploy:
+      - get-credential-and-update-service:
           requires:
             - aws-ecr/build-and-push-image
           context: aws-deploy
