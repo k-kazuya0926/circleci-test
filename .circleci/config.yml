@@ -3,8 +3,7 @@ version: 2.1
 executors:
   my-executor:
     docker:
-      - image: circleci/node # deprecated
-      # See https://circleci.com/docs/ja/2.0/next-gen-migration-guide/
+      - image: cimg/python:3.10.4 # circleci/aws-ecsのdeploy-service-updateジョブが使っているもの
 
 orbs:
   # aws-ecr: circleci/aws-ecr@6.10.0 # 「This job was rejected because the image is unavailable」
