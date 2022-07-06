@@ -39,12 +39,12 @@ jobs:
       #       source aws-envs.sh
       #       aws s3 ls
       - aws-ecs/update-service:
-          cluster-name: "circleci-book-cluster"
-          service-name: "circleci-book-service"
-          family: "circleci-book-task"
+          cluster-name: "circleci-book-cluster" # 環境により要変更
+          service-name: "circleci-book-service" # 環境により要変更
+          family: "circleci-book-task" # 環境により要変更
 
 workflows:
-  build-and-deploy-to-prod:
+  build-and-deploy-to-production:
     jobs:
       # - wait_for_approval:
       #     type: approval
@@ -62,15 +62,15 @@ workflows:
           # aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           region: "${AWS_REGION}"
           registry-id: AWS_ECR_REGISTRY_ID
-          repo: "nginx"
+          repo: "nginx" # 環境により要変更
           # tag: "${CIRCLE_SHA1}" # デフォルトはlatest
           tag: "latest"
           path: app
           dockerfile: docker/Dockerfile
-          # OIDCを使う場合
-          context: aws-deploy # 使える
+          # 以下はOIDCを使う場合に必要
+          context: aws-deploy # 環境により要変更
           assume-web-identity: true
-          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意
+          role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 「インスタンスプロファイルの ARN」ではないので注意。環境により要変更
           # role-arn: ${AWS_ROLE_ARN} # 　「An error occurred (UnrecognizedClientException) when calling the GetAuthorizationToken operation: The security token included in the request is invalid.」
           # role-arn: "${AWS_ROLE_ARN}" # 同上
           # role-arn: "arn:aws:iam::329892552245:role/${AWS_ROLE_NAME}" # 同上
@@ -80,7 +80,7 @@ workflows:
       - get-credentials-and-update-service:
           requires:
             - aws-ecr/build-and-push-image
-          context: aws-deploy
+          context: aws-deploy # 環境により要変更
       # 【参考】OIDCを使わずにECSへデプロイするジョブ
       # - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないと思われる
       #     requires:
@@ -94,6 +94,30 @@ workflows:
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
       #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
       #     context: aws-deploy
+
+build-and-deploy-to-staging:
+  jobs:
+    - aws-ecr/build-and-push-image:
+        filters:
+          branches:
+            only: master
+        region: "${AWS_REGION}"
+        registry-id: AWS_ECR_REGISTRY_ID
+        repo: "nginx" # 環境により要変更
+        tag: "latest"
+        path: app
+        dockerfile: docker/Dockerfile
+        # 以下はOIDCを使う場合に必要
+        context: aws-deploy # 環境により要変更
+        assume-web-identity: true
+        role-arn: "arn:aws:iam::329892552245:role/OIDCwithCircleCI" # 環境により要変更
+        role-session-name: "circleci-oidc"
+        session-duration: "900"
+    # OIDCを使ってECSへデプロイするジョブ
+    - get-credentials-and-update-service:
+        requires:
+          - aws-ecr/build-and-push-image
+        context: aws-deploy # 環境により要変更
 ### E2Eテストの例
 #version: 2
 #jobs:
