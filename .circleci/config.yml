@@ -99,7 +99,7 @@ workflows:
           requires:
             - aws-ecr/build-and-push-image
           pre-steps:
-            - aws-cli/install
+            # - aws-cli/install
             # シェルを使わない場合
             - run: |
                 aws_sts_credentials=$(aws sts assume-role-with-web-identity \
