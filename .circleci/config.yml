@@ -123,3 +123,4 @@ workflows:
           # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
           # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
           context: aws-deploy
+          force-new-deployment: true
