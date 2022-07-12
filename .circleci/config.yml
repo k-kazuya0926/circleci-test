@@ -146,5 +146,5 @@ workflows:
           aws-region: AWS_REGION
           cluster: "circleci-book-cluster"
           subnet-ids: "subnet-0db3749ff7aa39ebf,subnet-07190721a39aae409"
-          task-definition: "circleci-book-task:latest"
+          task-definition: "circleci-book-task"
           context: aws-deploy
