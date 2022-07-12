@@ -145,6 +145,7 @@ workflows:
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           aws-region: AWS_REGION
           cluster: "circleci-book-cluster"
+          security-group-ids: "sg-0bd48b96baba4bfb8"
           subnet-ids: "subnet-0db3749ff7aa39ebf,subnet-07190721a39aae409"
           task-definition: "circleci-book-task"
           context: aws-deploy
