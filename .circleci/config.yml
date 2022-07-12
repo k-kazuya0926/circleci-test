@@ -97,7 +97,34 @@ workflows:
       #       - aws-ecr/build-and-push-image
       #     context: aws-deploy # 環境により要変更
       # ③OIDCおよびOrbsのジョブ使用
-      - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないため、pre-stepsを使用
+      # - aws-ecs/deploy-service-update: # aws-ecs@2.3.0はOIDCに対応していないため、pre-stepsを使用
+      #     requires:
+      #       - aws-ecr/build-and-push-image
+      #     pre-steps:
+      #       - aws-cli/install
+      #       - run: |
+      #           aws_sts_credentials=$(aws sts assume-role-with-web-identity \
+      #             --role-arn ${AWS_ROLE_ARN} \
+      #             --web-identity-token ${CIRCLE_OIDC_TOKEN} \
+      #             --role-session-name "circleci-oidc" \
+      #             --duration-seconds 900 \
+      #             --query "Credentials" \
+      #             --output "json")
+      #           echo export AWS_ACCESS_KEY_ID="$(echo $aws_sts_credentials | jq -r '.AccessKeyId')" >> $BASH_ENV
+      #           echo export AWS_SECRET_ACCESS_KEY="$(echo $aws_sts_credentials | jq -r '.SecretAccessKey')" >> $BASH_ENV
+      #           echo export AWS_SESSION_TOKEN="$(echo $aws_sts_credentials | jq -r '.SessionToken')" >> $BASH_ENV
+      #           source $BASH_ENV
+      #     aws-access-key-id: AWS_ACCESS_KEY_ID
+      #     aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+      #     aws-region: AWS_REGION
+      #     family: "circleci-book-task"
+      #     service-name: "circleci-book-service"
+      #     cluster-name: "circleci-book-cluster"
+      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
+      #     # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
+      #     context: aws-deploy
+      # マイグレーションタスク実行
+      - aws-ecs/run-task: # aws-ecs@2.3.0はOIDCに対応していないため、pre-stepsを使用
           requires:
             - aws-ecr/build-and-push-image
           pre-steps:
@@ -117,10 +144,6 @@ workflows:
           aws-access-key-id: AWS_ACCESS_KEY_ID
           aws-secret-access-key: AWS_SECRET_ACCESS_KEY
           aws-region: AWS_REGION
-          family: "circleci-book-task"
-          service-name: "circleci-book-service"
-          cluster-name: "circleci-book-cluster"
-          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:${CIRCLE_SHA1}"
-          # container-image-name-updates: "container=circleci-book-container,image-and-tag=${AWS_ECR_ACCOUNT_URL}/nginx:latest"
+          cluster: "circleci-book-cluster"
+          task-definition: "circleci-book-task:latest"
           context: aws-deploy
-          force-new-deployment: true
