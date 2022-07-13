@@ -148,5 +148,8 @@ workflows:
           security-group-ids: "sg-0bd48b96baba4bfb8"
           subnet-ids: "subnet-0db3749ff7aa39ebf,subnet-07190721a39aae409"
           task-definition: "circleci-book-task"
-          # assign-public-ip: ENABLED
+          # assign-public-ip: ENABLEDを指定しないとなぜかエラーになる
+          # ResourceInitializationError: unable to pull secrets or registry auth: execution resource retrieval failed: unable to retrieve ecr registry auth: service call has been retried 3 time(s):
+          # RequestError: send request failed caused by: Post https://api.ecr.ap-northeast-1.amazonaws.com/: dial tcp 52.119.222.141:443: i/o timeout
+          assign-public-ip: ENABLED
           context: aws-deploy
